@@ -1,0 +1,52 @@
+{
+    "builders": [{
+        "ami_description": "A single node Kubernetes cluster AMI using microk8s, based on Ubuntu.",
+        "ami_name": "flugel-microk8s-aws-{{isotime | clean_resource_name}}",
+        "instance_type": "t2.micro",
+        "region": "{{user `region`}}",
+        "source_ami_filter": {
+            "filters": {
+                "architecture": "x86_64",
+                "block-device-mapping.volume-type": "gp2",
+                "name": "*ubuntu-bionic-18.04-amd64-server-*",
+                "root-device-type": "ebs",
+                "virtualization-type": "hvm"
+            },
+            "most_recent": true,
+            "owners": [
+                "099720109477"
+            ]
+        },
+        "ssh_username": "ubuntu",
+        "type": "amazon-ebs"
+    }],
+    "provisioners": [{
+            "inline": [
+                "echo 'Sleeping for 30 seconds to give Ubuntu enough time to initialize (otherwise, packages may fail to install).'",
+                "sleep 30",
+                "sudo apt-get update"
+            ],
+            "type": "shell"
+        },
+        {
+            "type": "file",
+            "source": "{{template_dir}}/change-microk8s-password",
+            "destination": "/tmp/change-microk8s-password"
+        },
+        {
+            "inline": [
+                "sudo mv /tmp/change-microk8s-password /usr/bin",
+                "sudo chmod +x /usr/bin/change-microk8s-password"
+            ],
+            "type": "shell"
+        },
+        {
+            "scripts": [
+                "{{template_dir}}/configure-hostname.sh",
+                "{{template_dir}}/install-microk8s.sh",
+                "{{template_dir}}/install-tools.sh"
+            ],
+            "type": "shell"
+        }
+    ]
+}
