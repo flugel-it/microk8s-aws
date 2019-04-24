@@ -1,7 +1,10 @@
 {
+    "variables": {
+        "ami_name_prefix": ""
+    },
     "builders": [{
         "ami_description": "A single node Kubernetes cluster AMI using microk8s, based on Ubuntu.",
-        "ami_name": "flugel-microk8s-aws-{{isotime | clean_resource_name}}",
+        "ami_name": "{{user `ami_name_prefix`}}-{{isotime | clean_resource_name}}",
         "instance_type": "t2.micro",
         "region": "{{user `region`}}",
         "source_ami_filter": {
@@ -17,8 +20,17 @@
                 "099720109477"
             ]
         },
+        "ami_block_device_mappings": [{
+            "device_name": "/dev/xvda",
+            "delete_on_termination": "true",
+            "volume_size": 10,
+            "volume_type": "gp2"
+        }],
         "ssh_username": "ubuntu",
-        "type": "amazon-ebs"
+        "type": "amazon-ebs",
+        "ami_groups": [
+            "all"
+        ]
     }],
     "provisioners": [{
             "inline": [
