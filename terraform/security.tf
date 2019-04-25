@@ -1,5 +1,4 @@
 resource "aws_security_group" "sg" {
-  name_prefix = "microk8s-sg"
   vpc_id      = "${aws_vpc.vpc.id}"
 
   ingress {

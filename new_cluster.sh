@@ -21,7 +21,7 @@ function ask() {
 }
 
 ask "Choose a project directory" ""
-PROJECT_DIR=$ANSWER
+PROJECT_DIR="${ANSWER/#\~/$HOME}"
 
 if [ -e $PROJECT_DIR ]; then
     ask "Project directory already exists, do you want to continue ?" "no"
@@ -29,9 +29,6 @@ if [ -e $PROJECT_DIR ]; then
         exit 0
     fi
 fi
-
-
-
 
 ask "AMI name filter" $DEFAULT_AMI_NAME_FILTER
 AMI_NAME_FILTER=$ANSWER
