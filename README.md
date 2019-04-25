@@ -86,7 +86,7 @@ Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 
-  Enter a value:
+  Enter a value: yes
 ```
 
 This might take some minutes. There might be messages saying "Server not ready yet. Waiting for server", just wait.
