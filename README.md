@@ -1,6 +1,7 @@
 # microk8s-aws
 
-This project provides an easy way to deploy a Kubernetes single-node cluster using an AWS EC2 instance.
+This project provides an easy way to deploy a Kubernetes single-node cluster using an AWS EC2 instance. The project leverages [microk8s](http://microk8s.io) package to install all the cluster components.
+
 
 ## Installing Dependencies
 
