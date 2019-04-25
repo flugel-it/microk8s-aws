@@ -2,6 +2,6 @@
 
 set -e
 
-BASE=`dirname $0`
+BASE=`realpath \`dirname $0\``
 
-cd $BASE ; $BASE/bin/terraform destroy
+cd $BASE/terraform ; $BASE/bin/terraform destroy

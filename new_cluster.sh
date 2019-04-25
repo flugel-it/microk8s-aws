@@ -30,20 +30,26 @@ if [ -e $PROJECT_DIR ]; then
     fi
 fi
 
+
+
+
 ask "AMI name filter" $DEFAULT_AMI_NAME_FILTER
 AMI_NAME_FILTER=$ANSWER
 ask "AMI owner filter" $DEFAULT_AMI_OWNER_FILTER
 AMI_OWNER_FILTER=$ANSWER
 ask "EC2 instance type" $DEFAULT_INSTANCE_TYPE
 INSTANCE_TYPE=$ANSWER
-ask "SSH key pair file" $DEFAULT_SSH_KEY_PAIR_FILE
-SSH_KEY_PAIR_FILE=$ANSWER
 ask "What is your internet IP address?" $DEFAULT_INTERNET_IP
 INTERNET_IP=$ANSWER
 ask "Terraform module source" $DEFAULT_TF_MODULE_SOURCE
 TF_MODULE_SOURCE=$ANSWER
 
-echo "Generating project"
+echo "Generating project directory"
+mkdir -p $PROJECT_DIR
+echo "Generating key"
+ssh-keygen -m PEM -f $PROJECT_DIR/key.pem
+SSH_KEY_PAIR_FILE=$PROJECT_DIR/key.pem.pub
+
 mkdir -p $PROJECT_DIR/terraform
 cp -R $BASE/project_template/* $PROJECT_DIR
 
@@ -64,6 +70,9 @@ echo "Installing terraform binary to the project directory"
 mkdir -p $PROJECT_DIR/bin
 $BASE/installdep.sh terraform https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip $BASE/bin
 cp $BASE/bin/terraform $PROJECT_DIR/bin/terraform
-cd $PROJECT_DIR/terraform ; $PROJECT_DIR/bin/terraform init
+cd $PROJECT_DIR/terraform ; ../bin/terraform init
 echo "Project created in: $PROJECT_DIR"
-echo "Go to $PROJECT_DIR/terraform and run `./bin/up.sh` to create cluster"
+echo "Go to $PROJECT_DIR/terraform and run ./bin/up.sh to create cluster"
+
+#TODO: create gitignore
+# generate key
