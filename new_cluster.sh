@@ -48,6 +48,7 @@ echo "Generating project directory"
 mkdir -p $PROJECT_DIR
 echo "Generating key"
 ssh-keygen -m PEM -f $PROJECT_DIR/key.pem
+chmod 400 $PROJECT_DIR/key.pem
 SSH_KEY_PAIR_FILE=$PROJECT_DIR/key.pem.pub
 
 mkdir -p $PROJECT_DIR/terraform

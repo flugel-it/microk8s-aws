@@ -13,12 +13,12 @@ cd $BASE/terraform ; $BASE/bin/terraform state show module.microk8s_cluster.aws_
 KUBE_HOST=`cat $BASE/hostname`
 
 # Wait for the server
-until ssh -i $BASE/key.pem -o "StrictHostKeyChecking=no" ubuntu@$KUBE_HOST echo; do
+until ssh -i $BASE/key.pem -o "StrictHostKeyChecking=no" ubuntu@$KUBE_HOST "/snap/bin/microk8s.status"; do
     echo "Server not ready yet. Waiting for server"
     sleep 5
 done
 
-ssh -i $BASE/key.pem -o "StrictHostKeyChecking=no" ubuntu@$KUBE_HOST "/snap/bin/microk8s.config -l" | sed -e "s/127.0.0.1/$KUBE_HOST/g" -e "s/certificate-authority-data: \(.*\)/insecure-skip-tls-verify: true/g" > kubeconfig
+ssh -i $BASE/key.pem -o "StrictHostKeyChecking=no" ubuntu@$KUBE_HOST "/snap/bin/microk8s.config -l" | sed -e "s/127.0.0.1/$KUBE_HOST/g" -e "s/certificate-authority-data: \(.*\)/insecure-skip-tls-verify: true/g" > $BASE/kubeconfig
 
 echo "Server is up and running"
 echo "The hostname is $KUBE_HOST"
