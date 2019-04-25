@@ -48,6 +48,11 @@ ssh-keygen -m PEM -f $PROJECT_DIR/key.pem
 chmod 400 $PROJECT_DIR/key.pem
 SSH_KEY_PAIR_FILE=$PROJECT_DIR/key.pem.pub
 
+echo key.pem >> $PROJECT_DIR/.gitignore
+echo ec2instance >> $PROJECT_DIR/.gitignore
+echo hostname >> $PROJECT_DIR/.gitignore
+echo kubeconfig >> $PROJECT_DIR/.gitignore
+
 mkdir -p $PROJECT_DIR/terraform
 cp -R $BASE/project_template/* $PROJECT_DIR
 

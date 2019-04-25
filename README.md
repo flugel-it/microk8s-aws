@@ -90,6 +90,8 @@ Do you want to perform these actions?
 
 This might take some minutes. There might be messages saying "Server not ready yet. Waiting for server", just wait.
 
+Then the script will ask you to change the cluster admin password and apply the change.
+
 When the script finishes it outputs importan information about how to use the cluster.
 
 ```console
