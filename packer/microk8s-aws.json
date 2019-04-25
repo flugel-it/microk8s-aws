@@ -20,12 +20,6 @@
                 "099720109477"
             ]
         },
-        "ami_block_device_mappings": [{
-            "device_name": "/dev/xvda",
-            "delete_on_termination": "true",
-            "volume_size": 10,
-            "volume_type": "gp2"
-        }],
         "ssh_username": "ubuntu",
         "type": "amazon-ebs",
         "ami_groups": [

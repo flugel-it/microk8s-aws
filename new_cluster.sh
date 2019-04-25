@@ -45,6 +45,7 @@ TF_MODULE_SOURCE=$ANSWER
 
 echo "Generating project"
 mkdir -p $PROJECT_DIR/terraform
+cp -R $BASE/project_template/* $PROJECT_DIR
 
 cat <<EOF >$PROJECT_DIR/terraform/main.tf
 module "microk8s_cluster" {
@@ -61,8 +62,8 @@ EOF
 
 echo "Installing terraform binary to the project directory"
 mkdir -p $PROJECT_DIR/bin
-$BASE/installdep.sh terraform https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip $BASE/tmp
-cp $BASE/tmp/terraform $PROJECT_DIR/bin/terraform
-$PROJECT_DIR/bin/terraform init $PROJECT_DIR/terraform
+$BASE/installdep.sh terraform https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip $BASE/bin
+cp $BASE/bin/terraform $PROJECT_DIR/bin/terraform
+cd $PROJECT_DIR/terraform ; $PROJECT_DIR/bin/terraform init
 echo "Project created in: $PROJECT_DIR"
 echo "Go to $PROJECT_DIR/terraform and run `./bin/up.sh` to create cluster"
