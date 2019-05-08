@@ -179,7 +179,7 @@ In some cases it might be useful to move the `terraform` directory to another pl
 
 Example:
 
-```json
+```terraform
 module "microk8s_cluster" {
   source = "github.com/flugel-it/microk8s-aws//terraform-microk8s-aws"
   ami_filter_name = "${var.ami_filter_name}"
