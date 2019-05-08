@@ -2,84 +2,106 @@
 
 This project provides an easy way to deploy a Kubernetes single-node cluster using an AWS EC2 instance. The project leverages [microk8s](http://microk8s.io) package to install all the cluster components.
 
+## Using this project
 
-## Installing Dependencies
+The most common workflow for this project has two steps:
+
+* AMI building: Build the AWS AMI using Packer.
+* Cluster provisioning: Create an AWS EC2 instance using the built AMI. This step uses Terraform and some helper shell scripts.
+
+### Installing Dependencies
 
 * bash
 * awscli
-* ssh and ssh-keygen
 
-## Building the AMI
+### Building the AMI
+
+This task build an AMI with microk8s. The default AMI name is `"flugel-microk8s-aws-{{isotime | clean_resource_name}}`.
+You can change the prefix ("flugel-microk8s-aws") modifying the variable `AMI_NAME_PREFIX` in the Makefile.
+
+To build the AMI run:
 
 ```console
-$ make build_deps
-$ aws configure
 $ make ami
 ```
 
-## Creating a new cluster
+### Provisioning a new cluster
 
-You can use the `new_cluster.sh` wizard to create a new directory containing all the necessary files to manage a Kubernetes cluster.
+The directory `terraform` contains all you need to provision a new cluster after building the AMI.
 
-The wizard asks some questions:
-
-* project directory: A non existing directory where to create the cluster configuration and provisioning scripts.
-* AMI name filter: Used to find the right AWS AMI. If you used this project default Makefile to build the AMI, leave the default value here.
-* AMI owner filter: The owner of the AMI. If you built the AMI with your own account, leave the default "self".
-* EC2 instance type: The instance type to use for your single-node cluster.
-* Terraform module source: The source of the Terraform module used to provision the cluster. Use the default to use the module from your computer or enter any other valid location, like a git repository.
-
-The wizard will automatically generate a new key pair, this key pair is used to connect to the instance using SSH.
+First install Terraform and any other dependency to the `terraform/bin` directory running:
 
 ```console
-$ ./new_cluster.sh
+$ cd terraform
+$ ./ctl.sh deps
+```
 
-Choose a project directory []: ~/example-cluster
+You need to specify the values of these Terraform variables to provision a cluster:
+
+* `ami_filter_name`: Filter to use to find the AMI by name. Must be the same you used as the AMI name prefix (default: "flugel-microk8s-aws-*")
+* `ami_filter_owner`: Filter for the AMI owner (default: "self")
+* `instance_type`: Type of EC2 instance to use (default: "t2.micro")
+* `key_pair`: Public key to authenticate access to the instance using SSH
+* `allow_ssh_from_cidrs_0`: Network block allowed to connect using SSH.
+* `allow_kube_api_from_cidrs_0`: Network block allowed to connect to the Kubernetes API.
+* `allow_ingress_from_cidrs_0`: Network block allowed to connect to ports 80 and 443.
+
+You can create a *tfvars* file to pass the variables values or provide them in environment variables, prefixing the variable names with `TF_`.
+
+Inside the `terraform` directory you can find `wizard.sh`, a script to help you to set the values for all the variables.
+
+Example:
+```console
+$ cd terraform
+$ ./wizard.sh
 AMI name filter [flugel-microk8s-aws-*]: 
 AMI owner filter [self]: 
 EC2 instance type [t2.micro]: 
-What is your internet IP address? [YOUR INTERNET IP]: 
-Terraform module source [MICROK8S_AWS_DIR/terraform]: 
-Generating project directory
-Generating key
-Generating public/private rsa key pair.
-Enter passphrase (empty for no passphrase): 
-Enter same passphrase again: 
-Your identification has been saved in /home/miguel/example-cluster/key.pem.
-Your public key has been saved in /home/miguel/example-cluster/key.pem.pub.
-The key fingerprint is:
-SHA256:kpnSGcAywPO4Ij5bcx7AxKIgYwKxa3eIWDbFweDVrSE miguel@lxsam1
-The key's randomart image is:
-+---[RSA 2048]----+
-|=o.==o .         |
-|.=+oE.o .        |
-|*oO= ..o         |
-|B*=o...*         |
-|+o.=..B S        |
-|+.. o. .         |
-|+  o o           |
-| o. + .          |
-| .o  .           |
-+----[SHA256]-----+
-Installing terraform binary to the project directory
+What is your internet IP address? [181.166.95.104]: 
+SSH public key file [/home/miguel/.ssh/id_rsa.pub]: 
+SSH private key file [/home/miguel/.ssh/id_rsa]: 
+To setup your cluster:
+
+1) configure aws-cli
+
+2) Set the following env variables
+
+export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
+export TF_VAR_ami_filter_owner="self"
+export TF_VAR_instance_type="t2.micro"
+export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
+export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
+export TF_VAR_allow_ingress_from_cidrs_0 = "181.166.15.104/32"
+export TF_VAR_key_pair ="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/aaaaaaaaaaaaaaaaaaaaaaaaaaaa6MCESc1GqlwCUzBztpfwtsHS+x4cYpPBz4Lgb4epOaoRYkTkcADtT7q8k7ldWhocnC4OLPqBn91/cH0Cr19Okfzro26YZerKopno7laZLHLMaOpYFjaa4vM2kW40MH2G5wkLzdU8Wt8WLGIhS+2qQyDtiEdq2wxEH0zQKYyMZO7wOnLIV9rV+v7fg1O29X+26aAOG6qgbdwdEncnbdVG1mj1eDBDKdK1Ajj7zNpMAR+Kjm+cETjaFiomfyrDZ4nzPMYzt1hoGlRuchv/2VJNuGLfEXbNND3y4FuPBjmbEr+xknbLkr user@example.com"
+export MICROK8S_AWS_PRIVATE_KEY_FILE="/home/user/.ssh/id_rsa"
+
+3) Run
+
+./ctl.sh up
 ```
 
-After the wizard finishes, go to the cluster project directory you previously entered.
+After the wizard finishes, you can copy and execute the export commands needed to set the Terraform variables.
+
+Example:
 
 ```console
-$ cd ~/example-cluster
-$ ls
-bin  destroy.sh  key.pem  key.pem.pub  start.sh  stop.sh  terraform  up.sh
+$ export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
+$ export TF_VAR_ami_filter_owner="self"
+$ export TF_VAR_instance_type="t2.micro"
+$ export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
+$ export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
+$ export TF_VAR_allow_ingress_from_cidrs = "181.166.15.104/32"
+$ export TF_VAR_key_pair ="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/aaaaaaaaaaaaaaaaaaaaaaaaaaaa6MCESc1GqlwCUzBztpfwtsHS+x4cYpPBz4Lgb4epOaoRYkTkcADtT7q8k7ldWhocnC4OLPqBn91/cH0Cr19Okfzro26YZerKopno7laZLHLMaOpYFjaa4vM2kW40MH2G5wkLzdU8Wt8WLGIhS+2qQyDtiEdq2wxEH0zQKYyMZO7wOnLIV9rV+v7fg1O29X+26aAOG6qgbdwdEncnbdVG1mj1eDBDKdK1Ajj7zNpMAR+Kjm+cETjaFiomfyrDZ4nzPMYzt1hoGlRuchv/2VJNuGLfEXbNND3y4FuPBjmbEr+xknbLkr user@example.com"
+$ export MICROK8S_AWS_PRIVATE_KEY_FILE="/home/user/.ssh/id_rsa"
 ```
 
-This directory contains various scripts to easily manage the cluster. You can inspect the configuration in `terraform/main.tf`
+Then inside the terraform directory run `./ctl.sh up` to provision your cluster.
 
-Run `up.sh` to provision the cluster.
 ```console
-$ ./up.sh
+$ ./ctl.sh up
 ```
 
-Terraform will inform you the actions to be executed, type "yes" if you agree.
+Terraform will inform you the actions to be executed, type "yes" if you agree. (Optionally you can use the `./ctl.sh up -auto-approve` to skip interactive approval of changes before applying them)
 
 ```console
 Do you want to perform these actions?
@@ -91,7 +113,7 @@ Do you want to perform these actions?
 
 This might take some minutes. There might be messages saying "Server not ready yet. Waiting for server", just wait.
 
-Then the script will ask you to change the cluster admin password and apply the change.
+Then the script will ask you to change the cluster admin password and apply the change. (Default password is "mytestcluster")
 
 When the script finishes it outputs importan information about how to use the cluster.
 
@@ -107,36 +129,36 @@ For example you can see the status of the node running:
 $ kubectl get nodes --kubeconfig=kubeconfig
 ```
 
-## Stoping the cluster
+### Stoping the cluster
 
-To stop the cluster, but still be able to restart it later run:
+To stop the cluster, but still be able to restart it later run this inside the terraform directory:
 
 ```console
-$ ./stop.sh
+$ ./ctl.sh stop
 ```
 
 This will free some resources, but not all (Volume and Elastic IP will be preserved).
 
-## Restarting an stopped cluster
+### Restarting an stopped cluster
 
-To restart a previously stopped cluster, run:
+To restart a previously stopped cluster, run this inside the terraform directory:
 
 ```console
-$ ./restart.sh
+$ ./ctl.sh restart
 ```
 
 This might take some minutes, after that you will be able to use the cluster.
 
 
-## Destroy a cluster to free all its resources
+### Destroy a cluster to free all its resources
 
-You can free all your cluster resources running:
+You can free all your cluster resources running inside the terraform directory:
 
 ```console
-$ ./destroy.sh
+$ ./ctl.sh destroy
 ```
 
-Terraform will inform you the actions to be executed, type "yes" if you agree.
+Terraform will inform you the actions to be executed, type "yes" if you agree.  (Optionally you can use the `./ctl.sh destroy -auto-approve` to skip interactive approval of changes before applying them)
 
 ```console
 Do you really want to destroy all resources?
@@ -146,6 +168,28 @@ Do you really want to destroy all resources?
   Enter a value: yes
 ```
 
-After this, all the cluster resources in AWS will no longer exist.
+After this, all the cluster's resources in AWS will no longer exist.
 
-You can still recreate the cluster with `up.sh`
+You can still recreate the cluster running `./ctl.sh up`
+
+## Moving the Terraform directory outside the project repository
+
+In some cases it might be useful to move the `terraform` directory to another place or repository. In that case just copy the directory and update the Terraform module source in `terraform/main.tf` to point to this repository.
+
+
+Example:
+
+```json
+module "microk8s_cluster" {
+  source = "github.com/flugel-it/microk8s-aws//terraform-microk8s-aws"
+  ami_filter_name = "${var.ami_filter_name}"
+  ami_filter_owner = "${var.ami_filter_owner}"
+  instance_type = "${var.instance_type}"
+  allow_ssh_from_cidrs = ["${var.allow_ssh_from_cidrs_0}"]
+  allow_kube_api_from_cidrs = ["${var.allow_kube_api_from_cidrs_0}"]
+  allow_ingress_from_cidrs = ["${var.allow_ingress_from_cidrs_0}"]
+  key_pair = "${var.key_pair}"
+}
+```
+
+Then proceed as previously described.

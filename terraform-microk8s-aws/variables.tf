@@ -14,14 +14,18 @@ variable "instance_type" {
 
 variable "key_pair" {
     description = "Key pair to access the EC2 instance, could be your public ssh key"
+    default = ""
 }
 
-variable "allow_ssh_from_cidrs_0" {
-    description = "CIDRs allowed to connect to SSH"
+variable "allow_ssh_from_cidrs" {
+    description = "List of CIDRs allowed to connect to SSH"
+    default = []
 }
-variable "allow_kube_api_from_cidrs_0" {
-    description = "CIDRs allowed to access Kubernetes API"
+variable "allow_kube_api_from_cidrs" {
+    description = "List of CIDRs allowed to access Kubernetes API"
+    default = []
 }
-variable "allow_ingress_from_cidrs_0" {
-    description = "CIDRs allowed to access the cluster Ingress"
+variable "allow_ingress_from_cidrs" {
+    description = "List of CIDRs allowed to access the cluster Ingress"
+    default = []
 }

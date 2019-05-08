@@ -1,8 +1,9 @@
-build_deps: install_packer
+AMI_NAME_PREFIX=flugel-microk8s-aws
 
 install_packer:
-	./installdep.sh packer https://releases.hashicorp.com/packer/1.4.0/packer_1.4.0_linux_amd64.zip ./bin
+	./bin/installdep.sh packer https://releases.hashicorp.com/packer/1.4.0/packer_1.4.0_linux_amd64.zip ./bin
 
-ami:
-	packer build -var 'ami_name_prefix=flugel-microk8s-aws' packer/microk8s-aws.json
+ami: install_packer
+	AMI_NAME_PREFIX=${AMI_NAME_PREFIX} packer build packer/microk8s-aws.json
+
 

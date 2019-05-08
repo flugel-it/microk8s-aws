@@ -3,5 +3,7 @@
 set -e
 
 BASE=`realpath \`dirname $0\``
+CMD=$1
 
-cd $BASE/terraform ; $BASE/bin/terraform destroy
+shift
+cd $BASE ; ./bin/cmd/$CMD.sh $@

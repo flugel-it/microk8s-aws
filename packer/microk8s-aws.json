@@ -1,6 +1,6 @@
 {
     "variables": {
-        "ami_name_prefix": ""
+        "ami_name_prefix": "{{env `AMI_NAME_PREFIX`}}"
     },
     "builders": [{
         "ami_description": "A single node Kubernetes cluster AMI using microk8s, based on Ubuntu.",
