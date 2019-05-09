@@ -113,14 +113,14 @@ Do you want to perform these actions?
 
 This might take some minutes. There might be messages saying "Server not ready yet. Waiting for server", just wait.
 
-Then the script will ask you to change the cluster admin password and apply the change. (Default password is "mytestcluster")
-
 When the script finishes it outputs importan information about how to use the cluster.
 
 ```console
-The hostname is ec2-3-214-234-139.compute-1.amazonaws.com
+The IP address is 3.209.90.166
+The EC2 InstanceIds is i-0d88f7a8a4186d1ff
 Kubeconfig stored in ./kubeconfig file
-You can connect using ssh -i key.pem ubuntu@ec2-3-214-234-139.compute-1.amazonaws.com
+kubectl get nodes --kubeconfig=./kubeconfig
+You can connect using ssh -i key.pem ubuntu@3.209.90.166
 ```
 
 For example you can see the status of the node running:
@@ -171,6 +171,22 @@ Do you really want to destroy all resources?
 After this, all the cluster's resources in AWS will no longer exist.
 
 You can still recreate the cluster running `./ctl.sh up`
+
+### Other ctl.sh commands
+
+```
+Usage: ./ctl.sh <command> [args].
+
+Available commands:
+chpass         Change cluster's password
+deps           Install required dependencies, like terraform
+destroy        Destroy all cluster's resources
+kubeconf       Download the cluster's kubeconf file
+up             Provision the cluster
+restart        Restart a previously "stopped" cluster
+status         Shows information such as cluster IP and InstanceId
+stop           Stop the cluster without destroying its resources
+```
 
 ## Moving the Terraform directory outside the project repository
 

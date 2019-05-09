@@ -22,11 +22,8 @@ fi
 
 $TERRAFORM apply $@
 
-$TERRAFORM state show module.microk8s_cluster.aws_eip.public-ip | grep public_dns | awk '{print $3}' > hostname
-$TERRAFORM state show module.microk8s_cluster.aws_instance.cluster | grep "^id " | awk '{print $3}' > ec2instance
-
-# get kubeconfig
-KUBE_HOST=`cat hostname`
+KUBE_HOST=`$TERRAFORM output ip`
+EC2_INSTANCE=`$TERRAFORM output ec2instance`
 
 # Wait for the server
 until ssh -i $MICROK8S_AWS_PRIVATE_KEY_FILE -o "StrictHostKeyChecking=no" ubuntu@$KUBE_HOST "/snap/bin/microk8s.status > /dev/null" ; do
@@ -34,15 +31,11 @@ until ssh -i $MICROK8S_AWS_PRIVATE_KEY_FILE -o "StrictHostKeyChecking=no" ubuntu
     sleep 5
 done
 
-ask "Choose a password for the Kubernetes cluster admin user" "admin"
-ADMIN_PASSWORD=$ANSWER
-echo "Changing cluster admin password, this may take some time..."
-
-ssh -i $MICROK8S_AWS_PRIVATE_KEY_FILE ubuntu@$KUBE_HOST "change-microk8s-password \"$ADMIN_PASSWORD\" > /dev/null"
-
 ssh -i $MICROK8S_AWS_PRIVATE_KEY_FILE ubuntu@$KUBE_HOST "/snap/bin/microk8s.config -l" | sed -e "s/127.0.0.1/$KUBE_HOST/g" -e "s/certificate-authority-data: \(.*\)/insecure-skip-tls-verify: true/g" > kubeconfig
 
 echo "Server is up and running"
-echo "The hostname is $KUBE_HOST"
+echo "The IP address is $KUBE_HOST"
+echo "The EC2 InstanceIds is $EC2_INSTANCE"
 echo "Kubeconfig stored in ./kubeconfig file"
+echo "kubectl get nodes --kubeconfig=./kubeconfig"
 echo "You can connect using ssh -i $MICROK8S_AWS_PRIVATE_KEY_FILE ubuntu@$KUBE_HOST"

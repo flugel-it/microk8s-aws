@@ -6,4 +6,4 @@ TERRAFORM=./bin/terraform
 
 $TERRAFORM destroy $@
 
-rm hostname kubeconfig ec2instance
+rm kubeconfig

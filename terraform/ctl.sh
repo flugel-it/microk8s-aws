@@ -11,12 +11,14 @@ cat <<EOF
 Usage: $0 <command> [args].
 
 Available commands:
-deps           Install required dependencies, like terraform.
-up             Provision the cluster
+chpass         Change cluster's password
+deps           Install required dependencies, like terraform
 destroy        Destroy all cluster's resources
-stop           Stop the cluster without destroying its resources
+kubeconf       Download the cluster's kubeconf file
+up             Provision the cluster
 restart        Restart a previously "stopped" cluster
-
+status         Shows information such as cluster IP and InstanceId
+stop           Stop the cluster without destroying its resources
 EOF
 
 exit 0

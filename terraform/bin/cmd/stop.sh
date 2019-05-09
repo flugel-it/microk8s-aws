@@ -2,4 +2,5 @@
 
 set -e
 
-aws ec2 stop-instances --instance-ids `cat ./ec2instance`
+EC2_INSTANCE=`./bin/terraform output ec2instance`
+aws ec2 stop-instances --instance-ids $EC2_INSTANCE
