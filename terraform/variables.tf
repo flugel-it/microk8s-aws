@@ -25,3 +25,7 @@ variable "allow_kube_api_from_cidrs_0" {
 variable "allow_ingress_from_cidrs_0" {
     description = "CIDRs allowed to access the cluster Ingress"
 }
+variable "tag_name" {
+    description = "Value of the tags Name to apply to all resources"
+    default = "microk8s-aws"
+}

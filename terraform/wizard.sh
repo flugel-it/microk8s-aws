@@ -7,6 +7,7 @@ DEFAULT_INSTANCE_TYPE="t2.micro"
 DEFAULT_SSH_PUBLIC_KEY_FILE=~/.ssh/id_rsa.pub
 DEFAULT_SSH_PRIVATE_KEY_FILE=~/.ssh/id_rsa
 DEFAULT_INTERNET_IP=`dig +short myip.opendns.com @resolver1.opendns.com`
+DEFAULT_TAG_NAME="microk8s-aws"
 
 ANSWER=""
 
@@ -26,6 +27,8 @@ ask "AMI owner filter" $DEFAULT_AMI_OWNER_FILTER
 AMI_OWNER_FILTER=$ANSWER
 ask "EC2 instance type" $DEFAULT_INSTANCE_TYPE
 INSTANCE_TYPE=$ANSWER
+ask "Tag Name" $DEFAULT_TAG_NAME
+TAG_NAME=$ANSWER
 ask "What is your internet IP address?" $DEFAULT_INTERNET_IP
 INTERNET_IP=$ANSWER
 ask "SSH public key file" $DEFAULT_SSH_PUBLIC_KEY_FILE
@@ -44,6 +47,7 @@ To setup your cluster:
 export TF_VAR_ami_filter_name="$AMI_NAME_FILTER"
 export TF_VAR_ami_filter_owner="$AMI_OWNER_FILTER"
 export TF_VAR_instance_type="$INSTANCE_TYPE"
+export TF_VAR_tag_name="$TAG_NAME"
 export TF_VAR_allow_ssh_from_cidrs_0="$INTERNET_IP/32"
 export TF_VAR_allow_kube_api_from_cidrs_0="$INTERNET_IP/32"
 export TF_VAR_allow_ingress_from_cidrs_0="$INTERNET_IP/32"

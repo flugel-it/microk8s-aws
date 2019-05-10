@@ -1,7 +1,5 @@
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags {
-    Name = "microk8s"
-  }
+  tags = "${local.common_tags}"
 }

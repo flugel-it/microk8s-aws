@@ -5,7 +5,5 @@ resource "aws_instance" "cluster" {
   subnet_id       = "${aws_subnet.subnet-uno.id}"
   key_name = "${aws_key_pair.user-key.key_name}"
 
-  tags = {
-    Name = "microk8s"
-  }
+  tags = "${local.common_tags}"
 }

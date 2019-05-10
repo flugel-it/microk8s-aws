@@ -45,6 +45,7 @@ You need to specify the values of these Terraform variables to provision a clust
 * `allow_ssh_from_cidrs_0`: Network block allowed to connect using SSH.
 * `allow_kube_api_from_cidrs_0`: Network block allowed to connect to the Kubernetes API.
 * `allow_ingress_from_cidrs_0`: Network block allowed to connect to ports 80 and 443.
+* `tag_name`: Tag value of the tag Name to apply to all resources.
 
 You can create a *tfvars* file to pass the variables values or provide them in environment variables, prefixing the variable names with `TF_`.
 
@@ -57,6 +58,7 @@ $ ./wizard.sh
 AMI name filter [flugel-microk8s-aws-*]: 
 AMI owner filter [self]: 
 EC2 instance type [t2.micro]: 
+Tag Name [microk8s-aws]: 
 What is your internet IP address? [181.166.95.104]: 
 SSH public key file [/home/miguel/.ssh/id_rsa.pub]: 
 SSH private key file [/home/miguel/.ssh/id_rsa]: 
@@ -69,6 +71,7 @@ To setup your cluster:
 export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
 export TF_VAR_ami_filter_owner="self"
 export TF_VAR_instance_type="t2.micro"
+export TF_VAR_tag_name="microk8s-aws"
 export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
 export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
 export TF_VAR_allow_ingress_from_cidrs_0 = "181.166.15.104/32"
@@ -88,6 +91,7 @@ Example:
 $ export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
 $ export TF_VAR_ami_filter_owner="self"
 $ export TF_VAR_instance_type="t2.micro"
+$ export TF_VAR_tag_name="microk8s-aws"
 $ export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
 $ export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
 $ export TF_VAR_allow_ingress_from_cidrs = "181.166.15.104/32"

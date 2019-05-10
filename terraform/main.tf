@@ -7,4 +7,5 @@ module "microk8s_cluster" {
   allow_kube_api_from_cidrs = ["${var.allow_kube_api_from_cidrs_0}"]
   allow_ingress_from_cidrs = ["${var.allow_ingress_from_cidrs_0}"]
   key_pair = "${var.key_pair}"
+  tag_name = "${var.tag_name}"
 }

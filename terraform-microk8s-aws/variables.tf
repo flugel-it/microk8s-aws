@@ -29,3 +29,8 @@ variable "allow_ingress_from_cidrs" {
     description = "List of CIDRs allowed to access the cluster Ingress"
     default = []
 }
+
+variable "tag_name" {
+    description = "Value of the tags Name to apply to all resources"
+    default = "microk8s-aws"
+}
