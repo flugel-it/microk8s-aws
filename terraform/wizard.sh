@@ -36,23 +36,30 @@ SSH_PUBLIC_KEY_FILE=$ANSWER
 ask "SSH private key file" $DEFAULT_SSH_PRIVATE_KEY_FILE
 SSH_PRIVATE_KEY_FILE=$ANSWER
 
+cat <<EOF >terraform.auto.tfvars
+ami_filter_name="$AMI_NAME_FILTER"
+ami_filter_owner="$AMI_OWNER_FILTER"
+instance_type="$INSTANCE_TYPE"
+tag_name="$TAG_NAME"
+allow_ssh_from_cidrs_0="$INTERNET_IP/32"
+allow_kube_api_from_cidrs_0="$INTERNET_IP/32"
+allow_ingress_from_cidrs_0="$INTERNET_IP/32"
+key_pair="`cat $SSH_PUBLIC_KEY_FILE`"
+EOF
+
+cat <<EOF >.cmdsettings
+export MICROK8S_AWS_PRIVATE_KEY_FILE="$SSH_PRIVATE_KEY_FILE"
+EOF
+
+
 cat <<EOF
 
 To setup your cluster:
 
 1) configure aws-cli
+2) Install dependencies
 
-2) Set the following env variables
-
-export TF_VAR_ami_filter_name="$AMI_NAME_FILTER"
-export TF_VAR_ami_filter_owner="$AMI_OWNER_FILTER"
-export TF_VAR_instance_type="$INSTANCE_TYPE"
-export TF_VAR_tag_name="$TAG_NAME"
-export TF_VAR_allow_ssh_from_cidrs_0="$INTERNET_IP/32"
-export TF_VAR_allow_kube_api_from_cidrs_0="$INTERNET_IP/32"
-export TF_VAR_allow_ingress_from_cidrs_0="$INTERNET_IP/32"
-export TF_VAR_key_pair="`cat $SSH_PUBLIC_KEY_FILE`"
-export MICROK8S_AWS_PRIVATE_KEY_FILE="$SSH_PRIVATE_KEY_FILE"
+./ctl.sh deps
 
 3) Run
 

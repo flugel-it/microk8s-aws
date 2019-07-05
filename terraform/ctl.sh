@@ -26,4 +26,4 @@ exit 0
 fi
 
 shift
-cd $BASE ; ./bin/cmd/$CMD.sh $@
+cd $BASE ; source .cmdsettings ; ./bin/cmd/$CMD.sh $@

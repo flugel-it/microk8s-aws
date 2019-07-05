@@ -17,12 +17,12 @@ The most common workflow for this project has two steps:
 ### Building the AMI
 
 This task build an AMI with microk8s. The default AMI name is `"flugel-microk8s-aws-{{isotime | clean_resource_name}}`.
-You can change the prefix ("flugel-microk8s-aws") modifying the variable `AMI_NAME_PREFIX` in the Makefile.
+You can change the prefix ("flugel-microk8s-aws") modifying the variable `AMI_NAME_PREFIX` in the Makefile call.
 
 To build the AMI run:
 
 ```console
-$ make ami
+$ AMI_NAME_PREFIX=my-microk8s-ami make ami
 ```
 
 ### Provisioning a new cluster
@@ -65,39 +65,17 @@ SSH private key file [/home/miguel/.ssh/id_rsa]:
 To setup your cluster:
 
 1) configure aws-cli
+2) Install dependencies
 
-2) Set the following env variables
-
-export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
-export TF_VAR_ami_filter_owner="self"
-export TF_VAR_instance_type="t2.micro"
-export TF_VAR_tag_name="microk8s-aws"
-export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
-export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
-export TF_VAR_allow_ingress_from_cidrs_0 = "181.166.15.104/32"
-export TF_VAR_key_pair ="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/aaaaaaaaaaaaaaaaaaaaaaaaaaaa6MCESc1GqlwCUzBztpfwtsHS+x4cYpPBz4Lgb4epOaoRYkTkcADtT7q8k7ldWhocnC4OLPqBn91/cH0Cr19Okfzro26YZerKopno7laZLHLMaOpYFjaa4vM2kW40MH2G5wkLzdU8Wt8WLGIhS+2qQyDtiEdq2wxEH0zQKYyMZO7wOnLIV9rV+v7fg1O29X+26aAOG6qgbdwdEncnbdVG1mj1eDBDKdK1Ajj7zNpMAR+Kjm+cETjaFiomfyrDZ4nzPMYzt1hoGlRuchv/2VJNuGLfEXbNND3y4FuPBjmbEr+xknbLkr user@example.com"
-export MICROK8S_AWS_PRIVATE_KEY_FILE="/home/user/.ssh/id_rsa"
+./ctl.sh deps
 
 3) Run
 
 ./ctl.sh up
+
 ```
 
-After the wizard finishes, you can copy and execute the export commands needed to set the Terraform variables.
-
-Example:
-
-```console
-$ export TF_VAR_ami_filter_name="flugel-microk8s-aws-*"
-$ export TF_VAR_ami_filter_owner="self"
-$ export TF_VAR_instance_type="t2.micro"
-$ export TF_VAR_tag_name="microk8s-aws"
-$ export TF_VAR_allow_ssh_from_cidrs_0 = "181.166.15.104/32"
-$ export TF_VAR_allow_kube_api_from_cidrs_0 = "181.166.15.104/32"
-$ export TF_VAR_allow_ingress_from_cidrs = "181.166.15.104/32"
-$ export TF_VAR_key_pair ="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/aaaaaaaaaaaaaaaaaaaaaaaaaaaa6MCESc1GqlwCUzBztpfwtsHS+x4cYpPBz4Lgb4epOaoRYkTkcADtT7q8k7ldWhocnC4OLPqBn91/cH0Cr19Okfzro26YZerKopno7laZLHLMaOpYFjaa4vM2kW40MH2G5wkLzdU8Wt8WLGIhS+2qQyDtiEdq2wxEH0zQKYyMZO7wOnLIV9rV+v7fg1O29X+26aAOG6qgbdwdEncnbdVG1mj1eDBDKdK1Ajj7zNpMAR+Kjm+cETjaFiomfyrDZ4nzPMYzt1hoGlRuchv/2VJNuGLfEXbNND3y4FuPBjmbEr+xknbLkr user@example.com"
-$ export MICROK8S_AWS_PRIVATE_KEY_FILE="/home/user/.ssh/id_rsa"
-```
+The wizard creates a `terraform.auto.tfvars` containing your preferences.
 
 Then inside the terraform directory run `./ctl.sh up` to provision your cluster.
 
