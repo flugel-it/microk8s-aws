@@ -4,9 +4,8 @@ set -e
 
 sudo apt-get install snapd
 sudo snap remove kubectl-eks
-sudo snap install --classic --channel=1.14/stable microk8s
-sudo microk8s.start 
-
+sudo snap install --classic --channel=1.15/stable microk8s
+sudo microk8s.start
 # Wait for microk8s to start
 until /snap/bin/microk8s.status ; do sleep 1 ; done
 # Enable standard modules
