@@ -5,7 +5,7 @@
     "builders": [{
         "ami_description": "A single node Kubernetes cluster AMI using microk8s, based on Ubuntu.",
         "ami_name": "{{user `ami_name_prefix`}}-{{isotime | clean_resource_name}}",
-        "instance_type": "t3.large",
+        "instance_type": "t2.micro",
         "region": "{{user `region`}}",
         "source_ami_filter": {
             "filters": {
